@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIMA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #000;
+    --white: #fff;
+    --gray: #888;
+    --light: #f2f2f2;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--white);
+    color: var(--black);
+    font-family: 'Barlow', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── CURSOR ── */
+  #cur {
+    position: fixed;
+    width: 10px; height: 10px;
+    background: var(--black);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: width .2s, height .2s, background .2s;
+  }
+  #cur.big { width: 40px; height: 40px; background: transparent; border: 1px solid var(--black); }
+  body * { cursor: none; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 36px;
+    background: var(--white);
+    border-bottom: 1px solid var(--black);
+  }
+
+  .nav-logo {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.12em;
+    text-decoration: none;
+    color: var(--black);
+    text-transform: uppercase;
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .nav-about {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--black);
+    font-weight: 500;
+    border-bottom: 1px solid transparent;
+    transition: border-color .15s;
+  }
+  .nav-about:hover { border-bottom-color: var(--black); }
+
+  .nav-buy {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: var(--black);
+    color: var(--white);
+    border: none;
+    padding: 11px 28px;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    transition: background .15s;
+  }
+  .nav-buy:hover { background: #222; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 120px 36px 48px;
+    position: relative;
+    border-bottom: 1px solid var(--black);
+    overflow: hidden;
+  }
+
+  .hero-bg-word {
+    position: absolute;
+    bottom: -0.12em;
+    left: -0.02em;
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(180px, 28vw, 420px);
+    line-height: 1;
+    color: var(--white);
+    -webkit-text-stroke: 1px rgba(0,0,0,0.06);
+    pointer-events: none;
+    user-select: none;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: flex-end;
+    gap: 40px;
+  }
+
+  .hero-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(64px, 12vw, 180px);
+    font-weight: 700;
+    line-height: 0.9;
+    letter-spacing: -0.01em;
+    color: var(--black);
+    text-transform: uppercase;
+  }
+
+  .hero-title span { display: block; }
+
+  .hero-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 20px;
+    padding-bottom: 8px;
+  }
+
+  .hero-tag {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gray);
+    text-align: right;
+  }
+
+  .hero-price {
+    font-family: 'Oswald', sans-serif;
+    font-size: 48px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-cta {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    background: var(--black);
+    color: var(--white);
+    border: none;
+    padding: 16px 40px;
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: background .15s;
+  }
+  .hero-cta:hover { background: #222; }
+
+  .hero-sub {
+    margin-top: 28px;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gray);
+    font-weight: 400;
+    max-width: 500px;
+  }
+
+  /* ── TICKER ── */
+  .ticker-bar {
+    border-bottom: 1px solid var(--black);
+    overflow: hidden;
+    padding: 16px 0;
+    background: var(--black);
+  }
+
+  .ticker-inner {
+    display: flex;
+    animation: tick 22s linear infinite;
+    white-space: nowrap;
+  }
+
+  .ti {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--white);
+    padding: 0 36px;
+    flex-shrink: 0;
+    font-weight: 500;
+  }
+
+  .ti-dot { color: #444; }
+
+  @keyframes tick {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* ── STATS STRIP ── */
+  .features-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-bottom: 1px solid var(--black);
+  }
+
+  .fs-item {
+    padding: 48px 36px;
+    border-right: 1px solid var(--black);
+  }
+  .fs-item:last-child { border-right: none; }
+
+  .fs-num {
+    font-family: 'Oswald', sans-serif;
+    font-size: 52px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+
+  .fs-label {
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gray);
+  }
+
+  /* ── PRODUCT SECTION ── */
+  .product-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid var(--black);
+  }
+
+  .product-visual {
+    background: var(--light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    border-right: 1px solid var(--black);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .product-visual-label {
+    position: absolute;
+    top: 32px; left: 32px;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gray);
+  }
+
+  .box-wrap { perspective: 800px; }
+
+  .box3d {
+    width: 240px; height: 200px;
+    position: relative;
+    transform-style: preserve-3d;
+    transform: rotateX(12deg) rotateY(-25deg);
+    animation: boxFloat 6s ease-in-out infinite;
+    transition: filter .3s;
+  }
+
+  @keyframes boxFloat {
+    0%,100% { transform: rotateX(12deg) rotateY(-25deg) translateY(0); }
+    50% { transform: rotateX(12deg) rotateY(-25deg) translateY(-16px); }
+  }
+
+  .bf { position: absolute; backface-visibility: hidden; }
+
+  .b-front {
+    width: 240px; height: 200px;
+    background: var(--white);
+    border: 1px solid #ccc;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.15);
+    transform: translateZ(0px);
+    position: relative;
+    transition: background .4s, border-color .4s;
+  }
+
+  .b-front::before {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    border: 1px solid rgba(0,0,0,0.07);
+    transition: border-color .4s;
+  }
+
+  .b-front-text {
+    font-family: 'Oswald', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.25em;
+    color: var(--black);
+    transition: color .4s;
+  }
+
+  .b-front-sub {
+    font-size: 8px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-top: 8px;
+    transition: color .4s;
+  }
+
+  .b-top {
+    width: 240px; height: 56px;
+    background: #e8e8e8;
+    border: 1px solid #ccc;
+    border-bottom: none;
+    position: absolute;
+    top: 0; left: 0;
+    transform-origin: bottom center;
+    transform: rotateX(90deg) translateZ(0px);
+    transition: background .4s, border-color .4s;
+  }
+
+  .b-side {
+    width: 56px; height: 200px;
+    background: #d0d0d0;
+    border: 1px solid #ccc;
+    border-left: none;
+    position: absolute;
+    top: 0; left: 240px;
+    transform-origin: left center;
+    transform: rotateY(-90deg) translateZ(0px);
+    transition: background .4s, border-color .4s;
+  }
+
+  .b-magnets {
+    position: absolute;
+    bottom: 14px;
+    display: flex;
+    gap: 18px;
+    z-index: 1;
+  }
+
+  .b-mag {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #555;
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.2);
+  }
+
+  .product-info {
+    padding: 80px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .pi-label {
+    font-size: 10px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 28px;
+  }
+
+  .pi-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: clamp(36px, 4vw, 60px);
+    line-height: 0.92;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .pi-desc {
+    font-size: 15px;
+    line-height: 1.75;
+    color: #444;
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    max-width: 400px;
+    margin-bottom: 48px;
+    letter-spacing: 0.02em;
+  }
+
+  .spec-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid var(--black);
+    border-left: 1px solid var(--black);
+    margin-bottom: 48px;
+  }
+
+  .spec-cell {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--black);
+    border-right: 1px solid var(--black);
+  }
+
+  .spec-cell-k {
+    font-size: 9px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 5px;
+  }
+
+  .spec-cell-v {
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+  }
+
+  .color-select {
+    display: flex;
+    gap: 0;
+    margin-bottom: 32px;
+  }
+
+  .color-btn {
+    padding: 14px 32px;
+    border: 1px solid var(--black);
+    background: transparent;
+    font-family: 'Barlow', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 600;
+    transition: background .15s, color .15s;
+    margin-right: -1px;
+  }
+
+  .color-btn:hover, .color-btn.active {
+    background: var(--black);
+    color: var(--white);
+    z-index: 1;
+    position: relative;
+  }
+
+  .buy-btn {
+    width: 100%;
+    padding: 18px;
+    background: var(--black);
+    color: var(--white);
+    border: none;
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    transition: background .15s;
+  }
+  .buy-btn:hover { background: #222; }
+
+  /* ── COLORWAY ── */
+  .colorway {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid var(--black);
+  }
+
+  .cw-panel {
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cw-panel:first-child { border-right: 1px solid var(--black); background: var(--white); }
+  .cw-panel:last-child { background: var(--black); color: var(--white); }
+
+  .cw-label {
+    font-size: 9px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    opacity: 0.5;
+  }
+
+  .cw-name {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: clamp(48px, 6vw, 88px);
+    line-height: 0.9;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .cw-pick {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 14px 36px;
+    text-decoration: none;
+    transition: all .2s;
+  }
+
+  .cw-panel:first-child .cw-pick {
+    background: var(--black); color: var(--white); border: 1px solid var(--black);
+  }
+  .cw-panel:first-child .cw-pick:hover { background: #333; }
+
+  .cw-panel:last-child .cw-pick {
+    background: var(--white); color: var(--black); border: 1px solid var(--white);
+  }
+  .cw-panel:last-child .cw-pick:hover { background: #ddd; }
+
+  /* ── CONTENTS LIST ── */
+  .contents-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .contents-item {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 20px 0;
+    border-top: 1px solid rgba(0,0,0,0.1);
+  }
+
+  .contents-list-dark .contents-item {
+    border-top-color: rgba(255,255,255,0.1);
+  }
+
+  .ci-num {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--gray);
+    min-width: 28px;
+    padding-top: 2px;
+  }
+
+  .ci-name {
+    display: block;
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .ci-desc {
+    display: block;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--gray);
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .contents-list-dark .ci-desc { color: #666; }
+
+  .cw-box {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-54%) rotateX(10deg) rotateY(-18deg);
+    transition: transform .4s ease;
+    perspective: 400px;
+  }
+
+  .cw-panel:hover .cw-box {
+    transform: translate(-50%,-58%) rotateX(10deg) rotateY(-18deg) translateY(-10px);
+  }
+
+  .cw-box-face {
+    width: 130px; height: 108px;
+    border: 1px solid;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 8px 16px 40px rgba(0,0,0,0.12);
+  }
+
+  .cw-panel:first-child .cw-box-face { background: var(--white); border-color: rgba(0,0,0,0.18); }
+  .cw-panel:last-child .cw-box-face { background: #111; border-color: rgba(255,255,255,0.12); }
+
+  .cw-box-text {
+    font-family: 'Oswald', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.2em;
+  }
+  .cw-panel:first-child .cw-box-text { color: rgba(0,0,0,0.3); }
+  .cw-panel:last-child .cw-box-text { color: rgba(255,255,255,0.3); }
+
+  /* ── CTA FULL ── */
+  .cta-full {
+    padding: 160px 36px;
+    text-align: center;
+    border-bottom: 1px solid var(--black);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-full-word {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(100px, 18vw, 280px);
+    letter-spacing: -0.03em;
+    color: var(--black);
+    opacity: 0.03;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .cta-full-label {
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 32px;
+    position: relative;
+  }
+
+  .cta-quote {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: clamp(22px, 3.5vw, 44px);
+    line-height: 1.1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    max-width: 820px;
+    margin: 0 auto 52px;
+    position: relative;
+  }
+
+  .cta-pair {
+    display: flex;
+    gap: 0;
+    justify-content: center;
+    position: relative;
+  }
+
+  .cta-btn-w {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 18px 52px;
+    border: 1px solid var(--black);
+    background: var(--white);
+    color: var(--black);
+    text-decoration: none;
+    transition: background .15s, color .15s;
+    margin-right: -1px;
+  }
+  .cta-btn-w:hover { background: var(--black); color: var(--white); }
+
+  .cta-btn-b {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 18px 52px;
+    border: 1px solid var(--black);
+    background: var(--black);
+    color: var(--white);
+    text-decoration: none;
+    transition: background .15s, color .15s;
+  }
+  .cta-btn-b:hover { background: var(--white); color: var(--black); }
+
+  /* ── FOOTER ── */
+  footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid var(--black);
+  }
+
+  .footer-col {
+    padding: 48px 36px;
+    border-right: 1px solid var(--black);
+  }
+  .footer-col:last-child { border-right: none; }
+
+  .footer-logo {
+    font-family: 'Oswald', sans-serif;
+    font-size: 24px;
+    letter-spacing: 0.2em;
+    display: block;
+    margin-bottom: 16px;
+  }
+
+  .footer-tagline {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--gray);
+    font-weight: 300;
+    max-width: 240px;
+  }
+
+  .footer-col-title {
+    font-size: 9px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 20px;
+  }
+
+  .footer-links { list-style: none; }
+  .footer-links li { margin-bottom: 12px; }
+  .footer-links a {
+    font-size: 13px;
+    color: var(--black);
+    text-decoration: none;
+    font-weight: 400;
+    transition: color .15s;
+  }
+  .footer-links a:hover { color: var(--gray); }
+
+  .footer-bottom {
+    grid-column: 1 / -1;
+    border-top: 1px solid var(--black);
+    padding: 22px 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-copy {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gray);
+  }
+
+  /* ── REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity .65s ease, transform .65s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    nav { padding: 18px 20px; }
+    .nav-link { display: none; }
+    .hero { padding: 100px 20px 40px; }
+    .hero-content { grid-template-columns: 1fr; }
+    .hero-meta { align-items: flex-start; }
+    .product-section { grid-template-columns: 1fr; }
+    .product-visual { min-height: 60vw; border-right: none; border-bottom: 1px solid var(--black); }
+    .product-info { padding: 48px 20px; }
+    .features-strip { grid-template-columns: 1fr 1fr; }
+    .fs-item:nth-child(2) { border-right: none; }
+    .colorway { grid-template-columns: 1fr; }
+    .cw-panel:first-child { border-right: none; border-bottom: 1px solid var(--black); }
+    .cta-full { padding: 80px 20px; }
+    .cta-pair { flex-direction: column; align-items: stretch; max-width: 320px; margin: 0 auto; }
+    .cta-btn-w { margin-right: 0; margin-bottom: -1px; }
+    footer { grid-template-columns: 1fr; }
+    .footer-col { border-right: none; border-bottom: 1px solid var(--black); }
+  }
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">RIMA</a>
+  <div class="nav-right">
+    <a href="about.html" class="nav-about">About</a>
+    <button class="nav-buy" onclick="document.getElementById('order').scrollIntoView({behavior:'smooth'})">$139.99</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-word">RIMA</div>
+  <div class="hero-content">
+    <div>
+      <h1 class="hero-title reveal">
+        <span>THE</span>
+        <span>UN-STASH</span>
+        <span>BOX.</span>
+      </h1>
+      <p class="hero-sub reveal" style="transition-delay:.15s">Indestructible plexiglass · Velvet interior · Rare earth magnets · Built to be on display.</p>
+    </div>
+    <div class="hero-meta reveal" style="transition-delay:.25s">
+      <p class="hero-tag">The Original</p>
+      <a href="#order" class="hero-cta">Shop Now</a>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- PRODUCT SECTION -->
+<section class="product-section" id="product">
+  <div class="product-visual">
+    <div class="product-visual-label" id="colorLabel">THE RIMA BOX — GLACIER WHITE</div>
+    <div class="box-wrap">
+      <div class="box3d" id="box3d">
+        <div class="b-top bf" id="bTop"></div>
+        <div class="b-side bf" id="bSide"></div>
+        <div class="b-front bf" id="bFront">
+          <span class="b-front-text" id="bText">RIMA</span>
+          <span class="b-front-sub" id="bSub">UN-Stash Box</span>
+          <div class="b-magnets">
+            <div class="b-mag"></div><div class="b-mag"></div>
+            <div class="b-mag"></div><div class="b-mag"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="product-info">
+    <p class="pi-label reveal">SKU-001 / The Original</p>
+    <h2 class="pi-title reveal" style="transition-delay:.1s">THE<br>RIMA<br>BOX</h2>
+    <p class="pi-desc reveal" style="transition-delay:.2s">High-end herb storage that deserves to be on display. Constructed from virtually indestructible high-gloss plexiglass, internally lined with premium velvet over laser-cut foam. Sealed with four powerful rare earth magnets.</p>
+
+    <div class="spec-grid reveal" style="transition-delay:.28s">
+      <div class="spec-cell"><div class="spec-cell-k">Dimensions</div><div class="spec-cell-v">7 × 4.5 × 4.5 in</div></div>
+      <div class="spec-cell"><div class="spec-cell-k">Weight</div><div class="spec-cell-v">3.2 lbs</div></div>
+      <div class="spec-cell"><div class="spec-cell-k">Jar Capacity</div><div class="spec-cell-v">Up to 7g</div></div>
+      <div class="spec-cell"><div class="spec-cell-k">Grinder</div><div class="spec-cell-v">Ceramic Coated</div></div>
+      <div class="spec-cell"><div class="spec-cell-k">Closure</div><div class="spec-cell-v">4× Magnets</div></div>
+      <div class="spec-cell"><div class="spec-cell-k">Interior</div><div class="spec-cell-v">Velvet + Foam</div></div>
+    </div>
+
+    <div class="color-select reveal" style="transition-delay:.34s">
+      <button class="color-btn active" onclick="selectColor(this,'WHITE')">White</button>
+      <button class="color-btn" onclick="selectColor(this,'BLACK')">Black</button>
+    </div>
+
+    <button class="buy-btn reveal" style="transition-delay:.4s">ADD TO CART — $139.99</button>
+  </div>
+</section>
+
+<!-- WHAT'S IN THE BOX -->
+<section class="colorway" id="colorway">
+  <div class="cw-panel">
+    <div class="cw-box"><div class="cw-box-face"><span class="cw-box-text">RIMA</span></div></div>
+    <p class="cw-label">Included — Every Box</p>
+    <h3 class="cw-name">WHAT'S<br>INSIDE.</h3>
+    <ul class="contents-list">
+      <li class="contents-item">
+        <span class="ci-num">01</span>
+        <div>
+          <span class="ci-name">Ceramic Coated Grinder</span>
+          <span class="ci-desc">Multi-chamber, stay-sharp ceramic blades. Never taints flavor.</span>
+        </div>
+      </li>
+      <li class="contents-item">
+        <span class="ci-num">02</span>
+        <div>
+          <span class="ci-name">Scentproof Glass Jar</span>
+          <span class="ci-desc">1–4oz childproof jar. Holds up to 7g of flower.</span>
+        </div>
+      </li>
+      <li class="contents-item">
+        <span class="ci-num">03</span>
+        <div>
+          <span class="ci-name">Chalkboard Lid</span>
+          <span class="ci-desc">Write-on, wipe-off lid to label your strain.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="cw-panel" style="background: var(--black); color: var(--white);">
+    <div class="cw-box"><div class="cw-box-face" style="background:#111; border-color:rgba(255,255,255,0.12);"><span class="cw-box-text" style="color:rgba(255,255,255,0.3);">RIMA</span></div></div>
+    <p class="cw-label">The Shell</p>
+    <h3 class="cw-name">THE<br>BOX.</h3>
+    <ul class="contents-list contents-list-dark">
+      <li class="contents-item">
+        <span class="ci-num">04</span>
+        <div>
+          <span class="ci-name">High-Gloss Plexiglass</span>
+          <span class="ci-desc">Virtually indestructible shell. Scratch-resistant, display-worthy.</span>
+        </div>
+      </li>
+      <li class="contents-item">
+        <span class="ci-num">05</span>
+        <div>
+          <span class="ci-name">Velvet-Lined Interior</span>
+          <span class="ci-desc">Premium velvet over laser-cut foam. Each piece fits to exact size.</span>
+        </div>
+      </li>
+      <li class="contents-item">
+        <span class="ci-num">06</span>
+        <div>
+          <span class="ci-name">4× Rare Earth Magnets</span>
+          <span class="ci-desc">Powerful locking magnetic top. Stays closed tight, opens clean.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="cta-full" id="order">
+  <div class="cta-full-word">RIMA</div>
+  <p class="cta-full-label reveal">The Rima Box</p>
+  <div class="cta-quote reveal" style="transition-delay:.1s">A necessity for any new or veteran smoker who believes their ritual deserves better than a ziplock bag.</div>
+  <div class="cta-pair reveal" style="transition-delay:.2s">
+    <a href="#" class="cta-btn-w">White — $139.99</a>
+    <a href="#" class="cta-btn-b">Black — $139.99</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-col">
+    <span class="footer-logo">RIMA</span>
+    <p class="footer-tagline">The original UN-Stash Box for the cultivated smoker.</p>
+  </div>
+  <div class="footer-col">
+    <p class="footer-col-title">Connect</p>
+    <ul class="footer-links">
+      <li><a href="https://www.instagram.com/therimabox/" target="_blank">Instagram</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="#">Privacy Policy</a></li>
+    </ul>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 The Rima Box. All rights reserved.</span>
+    <span class="footer-copy">@therimabox</span>
+  </div>
+</footer>
+
+<script>
+  // Cursor
+  const cur = document.getElementById('cur');
+  document.addEventListener('mousemove', e => {
+    cur.style.left = e.clientX + 'px';
+    cur.style.top = e.clientY + 'px';
+  });
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => cur.classList.add('big'));
+    el.addEventListener('mouseleave', () => cur.classList.remove('big'));
+  });
+
+  // Reveal on scroll
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // Trigger hero reveals immediately
+  setTimeout(() => {
+    document.querySelectorAll('.hero .reveal').forEach(el => el.classList.add('visible'));
+  }, 100);
+
+  // Color selector
+  function selectColor(btn, color) {
+    document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const label = document.getElementById('colorLabel');
+    const front = document.getElementById('bFront');
+    const top = document.getElementById('bTop');
+    const side = document.getElementById('bSide');
+    const text = document.getElementById('bText');
+    const sub = document.getElementById('bSub');
+
+    if (color === 'BLACK') {
+      label.textContent = 'THE RIMA BOX — OBSIDIAN BLACK';
+      front.style.cssText = 'background: linear-gradient(145deg,#222,#111); border-color: #444;';
+      top.style.cssText = 'background: #1a1a1a; border-color: #444;';
+      side.style.cssText = 'background: #111; border-color: #444;';
+      text.style.color = '#fff';
+      sub.style.color = '#555';
+    } else {
+      label.textContent = 'THE RIMA BOX — GLACIER WHITE';
+      front.style.cssText = '';
+      top.style.cssText = '';
+      side.style.cssText = '';
+      text.style.color = '';
+      sub.style.color = '';
+    }
+  }
+</script>
+</body>
+</html>
